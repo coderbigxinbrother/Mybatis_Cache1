@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.dao.mapper.StudentMapper">
+
+    <!--二级缓存策略，刷新时间段,大小，只读设置  -->
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+	<!-- <insert id="insertStu" parameterType="com.yc.bean.Student"> <selectKey 
+		keyProperty="sid" resultType="Integer" order="BEFORE"> select seq_student_sid.nextval 
+		from dual </selectKey> insert into student values(#{sid},#{sname},#{sage},#{sex},#{address}) 
+		</insert> -->
+
+	<insert id="insertStu" parameterType="com.yc.bean.Student">
+		<selectKey keyProperty="sid" resultType="Integer" order="AFTER">
+			<!-- select max(sid) from student -->
+			select seq_student_sid.currval from dual
+		</selectKey>
+		insert into student
+		values(seq_student_sid.nextval,#{sname},#{sage},#{sex},#{address})
+	</insert>
+
+	<select id="findStudent" parameterType="com.yc.bean.Student"
+		resultType="com.yc.bean.Student">
+		select * from student where 1 = 1
+		<if test="sex != null">
+			and sex=#{sex}
+		</if>
+		<if test="sage != null">
+			and sage=#{sage}
+		</if>
+	</select>
+
+	<select id="findStudentToWhere" parameterType="com.yc.bean.Student"
+		resultType="com.yc.bean.Student">
+		select * from student
+		<where>
+			<if test="sex != null">
+				and sex=#{sex}
+			</if>
+			<if test="sage != null">
+				and sage=#{sage}
+			</if>
+
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+
+	<select id="findStudentbychoose" parameterType="com.yc.bean.Student"
+		resultType="com.yc.bean.Student">
+		select * from student where 1=1
+		<choose>
+			<when test="sex != null">
+				and sex=#{sex}
+			</when>
+			<when test="sage != null">
+				and sage=#{sage}
+			</when>
+			<otherwise>
+				AND 1 = 1
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findStudentbytrimpref" parameterType="com.yc.bean.Student"
+		resultType="com.yc.bean.Student">
+		select * from student where 1=1
+		<trim prefix="where" prefixOverrides="AND |OR ">
+			<where>
+				<if test="sex != null">
+					and sex=#{sex}
+				</if>
+				<if test="sage != null">
+					and sage=#{sage}
+				</if>
+			</where>
+		</trim>
+	</select>
+	<select id="findStudentbytrimsuff" parameterType="com.yc.bean.Student"
+		resultType="com.yc.bean.Student">
+		update student
+		<trim prefix="set" suffixOverrides=",">
+			<set>
+				<if test="sname != null">sname=#{sname},</if>
+				<if test="sage != null">sage=#{sage},</if>
+				<if test="sex != null">sex=#{sex},</if>
+			</set>
+		</trim>
+		where sid=#{sid}
+	</select>
+	<update id="updateStudent" parameterType="com.yc.bean.Student">
+		update student
+		<set>
+			<if test="sname != null">sname=#{sname},</if>
+			<if test="sage != null">sage=#{sage},</if>
+			<if test="sex != null">sex=#{sex},</if>
+		</set>
+		where sid=#{sid}
+	</update>
+
+
+
+</mapper>

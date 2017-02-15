@@ -1,0 +1,45 @@
+关联映射：
+1v1 双向
+
+老师  班级
+
+双向：1、通过老师查班，也能通过班查询老师
+
+关系模型（数据库表的设计）：如何保证两个表的数据是一对一
+方案一：将外键unique
+方案二：将主键、外键相同
+classes
+    cid
+    cname
+    
+teacher
+    cid  primary key  foreign key
+    tname
+    （cid  unique）
+    
+对象模型（显示结果的方便）：
+Teacher
+    tid
+    tname
+    Classes对象
+Classes
+    cid
+    cname
+    Teacher对象
+    
+    
+sql语句有区别：
+1、一条语句查询
+    select tid, tname, cid, cname
+    from teacher
+    inner join classes
+    on teacher.cid = classes.cid
+    where tid = 1;
+    
+    select tid, tname, cid, cname
+    from teacher,classes
+    on teacher.cid = classes.cid
+    where tid = 1;
+2、两条语句查询   
+    
+实现双向  发多条语句
